@@ -4,7 +4,7 @@
   (c) ladyada / adafruit
   Code under MIT License.
 */
-#define __PRESURE 10
+#define MIN_TOUCH_PRESSURE 10
 
 //Measured ADC values for (0,0) and (210-1,320-1)
 //TS_MINX corresponds to ADC value when X = 0
@@ -21,7 +21,6 @@ class TouchPoint {
     public:
     int x, y, z;
 
-    public:
     TouchPoint(void);
     TouchPoint(int x, int y, int z);
     bool operator==(TouchPoint);
@@ -31,11 +30,12 @@ class TouchPoint {
 
 class TouchScreen {
     private:
+    unsigned long _lastRead;
+    TouchPoint _lastTouch;
     unsigned char _yp, _ym, _xm, _xp;
 
     public:
     TouchScreen(unsigned char xp, unsigned char yp, unsigned char xm, unsigned char ym);
-    bool isTouching(void);
     TouchPoint getPoint();
-
+    int isTouching(int x1, int y1, int x2, int y2);
 };

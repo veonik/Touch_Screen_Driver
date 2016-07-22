@@ -5,7 +5,7 @@
   Code under MIT License.
 */
 
-#include "pins_arduino.h"
+#include <Arduino.h>
 #include "wiring_private.h"
 #include <avr/pgmspace.h>
 #include "SeeedTouchScreen.h"
@@ -70,6 +70,12 @@ int avr_analog(int adpin)
 #endif
 
 TouchPoint TouchScreen::getPoint(void) {
+    unsigned long read = micros();
+    if (read - _lastRead < 10) {
+        return _lastTouch;
+    }
+
+    _lastRead = read;
     int x, y, z = 1;
     int samples[NUMSAMPLES];
 #if TSDEBUG
@@ -174,7 +180,7 @@ TouchPoint TouchScreen::getPoint(void) {
     y = map(y, TS_MINY, TS_MAXY, 0, 320);
 
 #if TSDEBUG
-    if(z > __PRESURE){
+    if(z > MIN_TOUCH_PRESSURE){
         Serial.print("x1 = "); Serial.print(xx[0]);
         Serial.print("\tx2 = ");Serial.print(xx[1]);
         Serial.print("\ty2 = ");Serial.print(yy[0]);
@@ -185,9 +191,14 @@ TouchPoint TouchScreen::getPoint(void) {
     return TouchPoint(x, y, z);
 }
 
-bool TouchScreen::isTouching(void)
+int TouchScreen::isTouching(int x1, int y1, int x2, int y2)
 {
     TouchPoint p = getPoint();
-    if(p.z > __PRESURE)return 1;
-    else return 0;
+    if (p.z > MIN_TOUCH_PRESSURE
+        && p.x >= x1 && p.x <= x2
+        && p.y >= y1 && p.y <= y2
+    ) {
+        return p.z;
+    }
+    return 0;
 }
