@@ -12,7 +12,7 @@
 
 // increase or decrease the touchscreen oversampling. This is a little different than you make think:
 // 1 is no oversampling, whatever data we get is immediately returned
-// 2 is double-sampling and we only return valid data if both points are the same
+// 2 is double-sampling and we only return valid data if both TouchPoints are the same
 // 3+ uses insert sort to get the median value.
 // We found 2 is precise yet not too slow so we suggest sticking with it!
 
@@ -21,23 +21,23 @@
 #define AVERAGE    1
 #define RXPLATE    300
 #define TSDEBUG    0		// if print the debug information
-Point::Point(void) {
+TouchPoint::TouchPoint(void) {
     x = y = 0;
 }
 
-Point::Point(int x0, int y0, int z0)
+TouchPoint::TouchPoint(int x0, int y0, int z0)
 {
     x = x0;
     y = y0;
     z = z0;
 }
 
-bool Point::operator==(Point p1)
+bool TouchPoint::operator==(TouchPoint p1)
 {
     return  ((p1.x == x) && (p1.y == y) && (p1.z == z));
 }
 
-bool Point::operator!=(Point p1)
+bool TouchPoint::operator!=(TouchPoint p1)
 {
     return  ((p1.x != x) || (p1.y != y) || (p1.z != z));
 }
@@ -69,7 +69,7 @@ int avr_analog(int adpin)
 }
 #endif
 
-Point TouchScreen::getPoint(void) {
+TouchPoint TouchScreen::getPoint(void) {
     int x, y, z = 1;
     int samples[NUMSAMPLES];
 #if TSDEBUG
@@ -170,6 +170,9 @@ Point TouchScreen::getPoint(void) {
         z = 0;
     }
 
+    x = map(x, TS_MINX, TS_MAXX, 0, 240);
+    y = map(y, TS_MINY, TS_MAXY, 0, 320);
+
 #if TSDEBUG
     if(z > __PRESURE){
         Serial.print("x1 = "); Serial.print(xx[0]);
@@ -179,12 +182,12 @@ Point TouchScreen::getPoint(void) {
     }
 #endif
 
-    return Point(x, y, z);
+    return TouchPoint(x, y, z);
 }
 
 bool TouchScreen::isTouching(void)
 {
-    Point p = getPoint();
+    TouchPoint p = getPoint();
     if(p.z > __PRESURE)return 1;
     else return 0;
 }

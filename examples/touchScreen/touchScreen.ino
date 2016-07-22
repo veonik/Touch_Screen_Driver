@@ -43,8 +43,8 @@ void setup(void) {
 }
 
 void loop(void) {
-  // a point object holds x y and z coordinates
-  Point p = ts.getPoint();
+  // a TouchPoint object holds x y and z coordinates
+  TouchPoint p = ts.getTouchPoint();
 
   if (p.z > __PRESURE) {
      Serial.print("Raw X = "); Serial.print(p.x);

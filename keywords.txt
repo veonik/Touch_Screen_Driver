@@ -5,7 +5,7 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-Point	KEYWORD1
+TouchPoint	KEYWORD1
 TouchScreen	KEYWORD1
 SeeedTouchScreen	KEYWORD1
 #######################################
